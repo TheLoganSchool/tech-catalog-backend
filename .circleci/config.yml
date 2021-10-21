@@ -3,6 +3,7 @@ version: 2.1
 jobs:
   deploy:
     machine: true
+    resource_class: small
     steps:
       - checkout
       - run: curl -fsSL https://get.deta.dev/cli.sh | sh
