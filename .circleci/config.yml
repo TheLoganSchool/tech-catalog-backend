@@ -1,0 +1,14 @@
+version: 2.1
+
+jobs:
+  deploy:
+    machine: true
+    steps:
+      - checkout
+      - run: curl -fsSL https://get.deta.dev/cli.sh | sh
+      - run: deta deploy
+
+workflows:
+  deploy:
+    jobs:
+      - deploy
