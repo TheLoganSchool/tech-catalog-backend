@@ -1,8 +1,46 @@
-from fastapi import FastAPI
+import os
+import time
+
+from fastapi import FastAPI, Cookie, HTTPException
+from google.oauth2 import id_token
+from google.auth.transport import requests
+import jwt
+
+from models import Login
+
+GOOGLE_CLIENT_ID = (
+    "909450569518-a13qpdatseo5vodup53g2ll8ifa4pej9.apps.googleusercontent.com"
+)
 
 app = FastAPI()
 
 
-@app.get("/")
-def root():
-    return "Hello, World!"
+@app.post("/login")
+def login_endpoint(login: Login, g_csrf_token: str = Cookie(None)):
+    token = login.g_csrf_token
+
+    # Check for CSRF Attacks
+    if not g_csrf_token:
+        raise HTTPException(400, "No CSRF token in Cookie.")
+    if not token:
+        raise HTTPException(400, "No CSRF token in post body.")
+    if g_csrf_token != token:
+        raise HTTPException(400, "Failed to verify double submit cookie.")
+
+    try:
+        id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+    except ValueError:
+        raise HTTPException(400, "Invalid Google auth token.")
+
+    encoded_session = jwt.encode(
+        {
+            "iss": "Logan Tech Catalog",
+            "iat": int(time.time()),
+            "exp": int(time.time())
+            + 60 * 60 * 24 * 365,  # expire in one year from issuing time
+        },
+        os.environ["JWT_SECRET"],
+        algorithm="HS256",
+    )
+
+    return encoded_session
