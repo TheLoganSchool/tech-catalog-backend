@@ -71,7 +71,7 @@ def check_add_item_auth_endpoint(request: Request):
     base64_pass = bytes(auth_header[1], "utf-8")
     utf8_pass = base64.b64decode(base64_pass).decode("utf-8")
 
-    if utf8_pass != os.environ("ADD_ITEM_PASSWORD"):
+    if utf8_pass != os.environ["ADD_ITEM_PASSWORD"]:
         raise HTTPException(400, "Incorrect password in Authorization header.")
     return True
 
