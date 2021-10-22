@@ -28,13 +28,18 @@ def login_endpoint(login: Login, g_csrf_token: str = Cookie(None)):
         raise HTTPException(400, "Failed to verify double submit cookie.")
 
     try:
-        id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+        id_info = id_token.verify_oauth2_token(
+            token, requests.Request(), GOOGLE_CLIENT_ID
+        )
+
+        name = id_info["name"]
     except ValueError:
         raise HTTPException(400, "Invalid Google auth token.")
 
     encoded_session = jwt.encode(
         {
             "iss": "Logan Tech Catalog",
+            "sub": name,
             "iat": int(time.time()),
             "exp": int(time.time())
             + 60 * 60 * 24 * 365,  # expire in one year from issuing time
