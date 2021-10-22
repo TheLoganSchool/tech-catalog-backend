@@ -62,8 +62,8 @@ def login_endpoint(login: Login, g_csrf_token: str = Cookie(None)):
 
 @app.post("/checkadditemauth")
 def check_add_item_auth_endpoint(request: Request):
-    return True
     auth_header = request.headers.get("Authorization")
+    return True
     if not auth_header:
         raise HTTPException(400, "Missing Authorization header.")
     auth_header = auth_header.split(" ")
