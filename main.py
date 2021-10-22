@@ -2,6 +2,7 @@ import os
 import time
 
 from fastapi import FastAPI, Cookie, HTTPException
+from deta import Deta
 from google.oauth2 import id_token
 from google.auth.transport import requests
 import jwt
@@ -13,6 +14,9 @@ GOOGLE_CLIENT_ID = (
 )
 
 app = FastAPI()
+
+deta = Deta()
+items_db = deta.Base("items")
 
 
 @app.post("/login")
@@ -49,3 +53,8 @@ def login_endpoint(login: Login, g_csrf_token: str = Cookie(None)):
     )
 
     return encoded_session
+
+
+@app.post("/checkadditemauth")
+def check_add_item_pass():
+    pass
