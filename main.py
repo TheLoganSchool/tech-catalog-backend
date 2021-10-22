@@ -1,7 +1,8 @@
+import base64
 import os
 import time
 
-from fastapi import FastAPI, Cookie, HTTPException
+from fastapi import FastAPI, Cookie, HTTPException, Request
 from deta import Deta
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -56,5 +57,16 @@ def login_endpoint(login: Login, g_csrf_token: str = Cookie(None)):
 
 
 @app.post("/checkadditemauth")
-def check_add_item_pass():
-    pass
+def check_add_item_auth(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        raise HTTPException(400, "Missing Authorization header.")
+    auth_header = auth_header.split(" ")
+    if len(auth_header) != 2 or auth_header.get(0) != "Basic":
+        raise HTTPException(400, "Invalid Authorization header.")
+    base64_pass = bytes(auth_header[1], "utf-8")
+    utf8_pass = base64.b64decode(base64_pass).decode("utf-8")
+
+    if utf8_pass != os.environ("ADD_ITEM_PASSWORD"):
+        raise HTTPException(400, "Incorrect password in Authorization header.")
+    return True
