@@ -19,7 +19,7 @@ GOOGLE_CLIENT_ID = (
 
 app = FastAPI()
 
-deta = Deta()
+deta = Deta(os.environ["DETA_PROJECT_KEY"])
 items_db = deta.Base("items")
 items_drive = deta.Drive("items")
 
