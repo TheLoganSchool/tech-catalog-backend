@@ -73,9 +73,9 @@ def check_add_item_auth_endpoint(request: Request):
 
     auth_header = auth_header.split()
 
-    if len(auth_header) != 2 or auth_header.get(0) != "Basic":
+    if len(auth_header) != 2 or auth_header[0] != "Basic":
         raise HTTPException(400, "Invalid Authorization header.")
-    return True
+
     if auth_header[1] != os.environ["ADD_ITEM_PASSWORD"]:
         raise HTTPException(400, "Incorrect password in Authorization header.")
     return True
