@@ -1,4 +1,3 @@
-import base64
 import os
 import time
 
@@ -60,7 +59,7 @@ def login_endpoint(login: Login, g_csrf_token: str = Cookie(None)):
     return encoded_session
 
 
-@app.post("/checkadditemauth")
+@app.post("/check-add-item-auth")
 def check_add_item_auth_endpoint(request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header:
@@ -70,17 +69,12 @@ def check_add_item_auth_endpoint(request: Request):
     if len(auth_header) != 2 or auth_header.get(0) != "Basic":
         raise HTTPException(400, "Invalid Authorization header.")
 
-    return auth_header
-    base64_pass = bytes(auth_header[1], "utf-8")
-
-    utf8_pass = base64.b64decode(base64_pass).decode("utf-8")
-
-    if utf8_pass != os.environ["ADD_ITEM_PASSWORD"]:
+    if auth_header[1] != os.environ["ADD_ITEM_PASSWORD"]:
         raise HTTPException(400, "Incorrect password in Authorization header.")
     return True
 
 
-@app.post("/additem")
+@app.post("/add-item")
 def add_item_endpoint(request: Request, item: Item):
     check_add_item_auth_endpoint(request)
 
