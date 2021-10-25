@@ -72,7 +72,7 @@ def check_add_item_auth_endpoint(request: Request):
         raise HTTPException(400, "Missing Authorization header.")
     auth_header = auth_header.split()
 
-    print(auth_header)
+    return auth_header
 
     if len(auth_header) != 2 or auth_header.get(0) != "Basic":
         raise HTTPException(400, "Invalid Authorization header.")
