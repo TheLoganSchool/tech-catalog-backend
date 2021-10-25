@@ -2,6 +2,7 @@ import os
 import time
 
 from fastapi import FastAPI, Cookie, HTTPException, Request
+from fastapi.responses import HTMLResponse
 from deta import Deta
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -23,9 +24,9 @@ items_db = deta.Base("items")
 items_drive = deta.Drive("items")
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def root():
-    return "🐰🥚 🔴🐟"
+    return "<center><h1>🐰🥚 🔴🐟</h1></center>"
 
 
 @app.post("/login")
