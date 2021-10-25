@@ -29,6 +29,12 @@ def root():
     return "<center><h1>🐰🥚 🔴🐟</h1></center>"
 
 
+@app.options("/login")
+def test(req: Request):
+    print(req.body())
+    return req.body()
+
+
 @app.post("/login")
 def login_endpoint(login: Login, g_csrf_token: str = Cookie(None)):
     token = login.g_csrf_token
@@ -100,3 +106,8 @@ def add_item_endpoint(request: Request, item: Item):
     image_byte_array = io.BytesIO()
     image.save(image_byte_array)
     items_drive.put(image.getvalue(), key)
+
+
+@app.get("/get-items")
+def get_items_endpoint():
+    pass
