@@ -23,6 +23,11 @@ items_db = deta.Base("items")
 items_drive = deta.Drive("items")
 
 
+@app.get("/")
+def root():
+    return "🐰🥚 🔴🐟"
+
+
 @app.post("/login")
 def login_endpoint(login: Login, g_csrf_token: str = Cookie(None)):
     token = login.g_csrf_token
