@@ -31,7 +31,7 @@ webhook = Webhook.from_url(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAda
 
 @app.exception_handler(HTTPException)
 def custom_http_exception_handler(request, exc):
-    webhook.send(
+    print(
         f"""\
 {repr(request)}
 
