@@ -5,6 +5,7 @@ from typing import Optional
 
 from fastapi import FastAPI, Cookie, HTTPException, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from deta import Deta
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -20,9 +21,22 @@ GOOGLE_CLIENT_ID = (
 
 app = FastAPI()
 
+
 deta = Deta(os.environ["DETA_PROJECT_KEY"])
 items_db = deta.Base("items")
 items_drive = deta.Drive("items")
+
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -112,3 +126,8 @@ def add_item_endpoint(
 @app.get("/get-items")
 def get_items_endpoint():
     return items_db.fetch(limit=10000).items
+
+
+@app.get("/error")
+def error_endpoint():
+    raise Exception
