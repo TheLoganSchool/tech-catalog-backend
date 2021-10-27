@@ -98,9 +98,10 @@ def add_item_endpoint(request: Request, item: Item):
     }
     if item.location:
         item_dict["location"] = item.location
-    """
-    key = items_db.put(item_dict)["key"]
+    items_db.put(item_dict)["key"]
 
+    return True
+    """
     image_file = item.image.file
     image = PIL.Image.open(image_file)
 
