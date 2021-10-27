@@ -132,4 +132,4 @@ def get_items_endpoint():
 
 @app.get("/error")
 def error_endpoint():
-    raise Exception
+    raise HTTPException(500, "Custom Internal Error")
