@@ -3,7 +3,9 @@ import time
 
 from fastapi import FastAPI, Cookie, HTTPException, Request
 from fastapi.responses import HTMLResponse
+from fastapi.exception_handlers import http_exception_handler
 from deta import Deta
+from discord import Webhook, RequestsWebhookAdapter
 from google.oauth2 import id_token
 from google.auth.transport import requests
 import jwt
@@ -24,16 +26,23 @@ deta = Deta(os.environ["DETA_PROJECT_KEY"])
 items_db = deta.Base("items")
 items_drive = deta.Drive("items")
 
+webhook = Webhook.from_url(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAdapter)
+
+
+@app.exception_handler(HTTPException)
+def custom_http_exception_handler(request, exc):
+    webhook.send(
+        f"""\
+{repr(request)}
+
+{repr(exc)}"""
+    )
+    return http_exception_handler(request, exc)
+
 
 @app.get("/", response_class=HTMLResponse)
 def root():
     return "<center><h1>🐰🥚 🔴🐟</h1></center>"
-
-
-@app.options("/login")
-def test(req: Request):
-    print(req.body())
-    return req.body()
 
 
 @app.post("/login")
