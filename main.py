@@ -6,7 +6,6 @@ from typing import Optional
 from fastapi import FastAPI, Cookie, HTTPException, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse
 from deta import Deta
-from discord import Webhook, RequestsWebhookAdapter
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 import jwt
@@ -24,12 +23,6 @@ app = FastAPI()
 deta = Deta(os.environ["DETA_PROJECT_KEY"])
 items_db = deta.Base("items")
 items_drive = deta.Drive("items")
-
-webhook = Webhook(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAdapter)
-
-
-def webhook_error(contents: str):
-    webhook.send(contents)
 
 
 @app.get("/", response_class=HTMLResponse)
