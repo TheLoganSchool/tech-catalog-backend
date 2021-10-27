@@ -1,18 +1,19 @@
 import os
+import io
 import time
+from typing import Optional
 
-from fastapi import FastAPI, Cookie, HTTPException, Request
+from fastapi import FastAPI, Cookie, HTTPException, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse
 from deta import Deta
+from discord import Webhook, RequestsWebhookAdapter
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 import jwt
-
-# import PIL
-# import io
+import PIL
 
 
-from models import Login, Item
+from models import Login
 
 GOOGLE_CLIENT_ID = (
     "909450569518-a13qpdatseo5vodup53g2ll8ifa4pej9.apps.googleusercontent.com"
@@ -23,6 +24,12 @@ app = FastAPI()
 deta = Deta(os.environ["DETA_PROJECT_KEY"])
 items_db = deta.Base("items")
 items_drive = deta.Drive("items")
+
+webhook = Webhook(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAdapter)
+
+
+def webhook_error(contents: str):
+    webhook.send(contents)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -83,25 +90,30 @@ def check_add_item_auth_endpoint(request: Request):
 
 
 @app.post("/add-item")
-def add_item_endpoint(request: Request, item: Item):
+def add_item_endpoint(
+    request: Request,
+    name: str = Form(...),
+    description: str = Form(...),
+    image: UploadFile = File(...),
+    location: Optional[str] = Form(None),
+):
     check_add_item_auth_endpoint(request)
 
     item_dict = {
-        "name": item.name,
-        "description": item.description,
+        "name": name,
+        "description": description,
     }
-    if item.location:
-        item_dict["location"] = item.location
-    items_db.put(item_dict)["key"]
+    if location:
+        item_dict["location"] = location
 
-    return True
-    """
-    image_file = item.image.file
-    image = PIL.Image.open(image_file)
+    key = items_db.put(item_dict)["key"]
+
+    image = PIL.Image.open(image.file)
 
     image_byte_array = io.BytesIO()
     image.save(image_byte_array)
-    items_drive.put(image.getvalue(), key)"""
+
+    items_drive.put(key, image_byte_array.getvalue())
 
 
 @app.get("/get-items")
