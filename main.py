@@ -26,7 +26,7 @@ deta = Deta(os.environ["DETA_PROJECT_KEY"])
 items_db = deta.Base("items")
 items_drive = deta.Drive("items")
 
-webhook = Webhook.from_url(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAdapter)
+webhook = Webhook.from_url(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAdapter())
 
 
 @app.exception_handler(HTTPException)
