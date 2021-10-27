@@ -7,8 +7,9 @@ from deta import Deta
 from google.oauth2 import id_token
 from google.auth.transport import requests
 import jwt
-import PIL
-import io
+
+# import PIL
+# import io
 
 
 from models import Login, Item
@@ -97,7 +98,7 @@ def add_item_endpoint(request: Request, item: Item):
     }
     if item.location:
         item_dict["location"] = item.location
-
+    """
     key = items_db.put(item_dict)["key"]
 
     image_file = item.image.file
@@ -105,7 +106,7 @@ def add_item_endpoint(request: Request, item: Item):
 
     image_byte_array = io.BytesIO()
     image.save(image_byte_array)
-    items_drive.put(image.getvalue(), key)
+    items_drive.put(image.getvalue(), key)"""
 
 
 @app.get("/get-items")
