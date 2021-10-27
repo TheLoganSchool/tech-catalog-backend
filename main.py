@@ -106,4 +106,4 @@ def add_item_endpoint(request: Request, item: Item):
 
 @app.get("/get-items")
 def get_items_endpoint():
-    return items_db.fetch(limit=10000)
+    return items_db.fetch(limit=10000).items
