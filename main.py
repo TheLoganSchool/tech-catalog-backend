@@ -3,7 +3,7 @@ import io
 import time
 from typing import Optional
 
-from fastapi import FastAPI, Cookie, HTTPException, Request, Form, UploadFile, File
+from fastapi import FastAPI, HTTPException, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from deta import Deta
@@ -45,16 +45,10 @@ def root():
 
 
 @app.post("/login")
-def login_endpoint(login: Login, g_csrf_token: str = Cookie(None)):
+def login_endpoint(login: Login):
     token = login.g_csrf_token
-
-    # Check for CSRF Attacks
-    if not g_csrf_token:
-        raise HTTPException(400, "No CSRF token in Cookie.")
     if not token:
         raise HTTPException(400, "No CSRF token in post body.")
-    if g_csrf_token != token:
-        raise HTTPException(400, "Failed to verify double submit cookie.")
 
     try:
         id_info = id_token.verify_oauth2_token(
