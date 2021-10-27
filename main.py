@@ -27,7 +27,7 @@ items_db = deta.Base("items")
 items_drive = deta.Drive("items")
 
 origins = [
-    "localhost",
+    "http://localhost",
 ]
 
 app.add_middleware(
