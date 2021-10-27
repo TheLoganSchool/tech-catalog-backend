@@ -1,7 +1,8 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from fastapi import UploadFile, File
+
+# from fastapi import UploadFile, File
 
 
 class Login(BaseModel):
@@ -11,5 +12,5 @@ class Login(BaseModel):
 class Item(BaseModel):
     name: str
     description: str
-    image: UploadFile = File(...)
+    # image: UploadFile = File(...)
     location: Optional[str] = None
