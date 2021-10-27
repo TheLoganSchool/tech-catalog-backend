@@ -6,6 +6,9 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+
+# from fastapi.exception_handlers import http_exception_handler
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from deta import Deta
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -27,7 +30,7 @@ items_db = deta.Base("items")
 items_drive = deta.Drive("items")
 
 origins = [
-    "http://localhost",
+    "*",
 ]
 
 app.add_middleware(
@@ -37,6 +40,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(StarletteHTTPException)
+def exception_handler(request, exc):
+    return True
 
 
 @app.get("/", response_class=HTMLResponse)
