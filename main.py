@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 # from fastapi.exception_handlers import http_exception_handler
-from starlette.exceptions import HTTPException as StarletteHTTPException
+# from starlette.exceptions import HTTPException as StarletteHTTPException
 from deta import Deta
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -42,7 +42,7 @@ app.add_middleware(
 )
 
 
-@app.exception_handler(StarletteHTTPException)
+@app.exception_handler(HTTPException)
 def exception_handler(request, exc):
     raise HTTPException(500, "Custom Internal Error 2")
 
@@ -132,5 +132,4 @@ def get_items_endpoint():
 
 @app.get("/error")
 def error_endpoint():
-    return True
-    # raise HTTPException(500, "Custom Internal Error")
+    raise HTTPException(500, "Custom Internal Error")
