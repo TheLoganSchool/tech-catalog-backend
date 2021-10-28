@@ -56,7 +56,7 @@ def custom_http_exception_handler(request, exc):
         )
         + "```"
     )
-    return PlainTextResponse("Internal Server Error", 500)
+    return PlainTextResponse("Internal Server Error :)", 500)
 
 
 @app.get("/", response_class=HTMLResponse)
