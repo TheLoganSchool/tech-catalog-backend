@@ -49,6 +49,7 @@ def exception_handler(request, exc):
 
 @app.get("/", response_class=HTMLResponse)
 def root():
+    raise HTTPException(400, "Missing Authorization header.")
     return "<center><h1>🐰🥚 🔴🐟</h1></center>"
 
 
