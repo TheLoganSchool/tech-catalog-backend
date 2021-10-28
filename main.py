@@ -1,22 +1,20 @@
 import os
 import io
 import time
+import traceback
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request, Form, UploadFile, File
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-
-# from fastapi.exception_handlers import http_exception_handler
-# from starlette.exceptions import HTTPException as StarletteHTTPException
+from pydantic.main import BaseModel
 from deta import Deta
+from discord import Webhook, RequestsWebhookAdapter
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 import jwt
-import PIL
+from PIL import Image
 
-
-from models import Login
 
 GOOGLE_CLIENT_ID = (
     "909450569518-a13qpdatseo5vodup53g2ll8ifa4pej9.apps.googleusercontent.com"
@@ -24,6 +22,7 @@ GOOGLE_CLIENT_ID = (
 
 app = FastAPI()
 
+webhook = Webhook.from_url(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAdapter())
 
 deta = Deta(os.environ["DETA_PROJECT_KEY"])
 items_db = deta.Base("items")
@@ -42,14 +41,26 @@ app.add_middleware(
 )
 
 
-@app.exception_handler(HTTPException)
-def exception_handler(request, exc):
-    raise HTTPException(status_code=500, detail="Custom Internal Error 2")
+class Login(BaseModel):
+    g_csrf_token: str
+
+
+@app.exception_handler(Exception)
+def custom_http_exception_handler(request, exc):
+    webhook.send(
+        "```"
+        + "".join(
+            traceback.format_exception(
+                etype=type(exc), value=exc, tb=exc.__traceback__, limit=-8
+            )
+        )
+        + "```"
+    )
+    return PlainTextResponse("Internal Server Error", 500)
 
 
 @app.get("/", response_class=HTMLResponse)
 def root():
-    raise HTTPException(400, "Missing Authorization header.")
     return "<center><h1>🐰🥚 🔴🐟</h1></center>"
 
 
@@ -83,7 +94,7 @@ def login_endpoint(login: Login):
     return encoded_session
 
 
-@app.post("/check-add-item-auth")
+@app.post("/check_add_item_auth")
 def check_add_item_auth_endpoint(request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header:
@@ -99,7 +110,7 @@ def check_add_item_auth_endpoint(request: Request):
     return True
 
 
-@app.post("/add-item")
+@app.post("/add_item")
 def add_item_endpoint(
     request: Request,
     name: str = Form(...),
@@ -116,21 +127,36 @@ def add_item_endpoint(
     if location:
         item_dict["location"] = location
 
-    key = items_db.put(item_dict)["key"]
-
-    image = PIL.Image.open(image.file)
+    image = Image.open(image.file)
 
     image_byte_array = io.BytesIO()
-    image.save(image_byte_array)
+    image.save(image_byte_array, format="png")
 
-    items_drive.put(key, image_byte_array.getvalue())
+    key = items_db.put(item_dict)["key"]
+    items_drive.put(key + ".png", image_byte_array.getvalue())
+
+    return key
 
 
-@app.get("/get-items")
+@app.get("/get_items")
 def get_items_endpoint():
     return items_db.fetch(limit=10000).items
 
 
+@app.get("/get_item")
+def get_item_endpoint(item_key: str):
+    result = items_db.get(item_key)
+    if not result:
+        raise HTTPException(400, "Item with key doesn't exist.")
+    return result
+
+
+@app.get("/get_item_image")
+def get_item_image_endpoint(item_key: str):
+    data = items_drive.get(f"{item_key}.png")
+    return StreamingResponse(data.iter_chunks())
+
+
 @app.get("/error")
 def error_endpoint():
-    raise HTTPException(status_code=400, detail="Custom Internal Error")
+    raise Exception
