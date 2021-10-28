@@ -44,7 +44,7 @@ app.add_middleware(
 
 @app.exception_handler(HTTPException)
 def exception_handler(request, exc):
-    raise HTTPException(500, "Custom Internal Error 2")
+    raise HTTPException(status_code=500, detail="Custom Internal Error 2")
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -132,4 +132,4 @@ def get_items_endpoint():
 
 @app.get("/error")
 def error_endpoint():
-    raise HTTPException(400, "Custom Internal Error")
+    raise HTTPException(status_code=400, detail="Custom Internal Error")
