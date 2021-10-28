@@ -44,7 +44,7 @@ app.add_middleware(
 
 @app.exception_handler(StarletteHTTPException)
 def exception_handler(request, exc):
-    return True
+    raise HTTPException(500, "Custom Internal Error 2")
 
 
 @app.get("/", response_class=HTMLResponse)
