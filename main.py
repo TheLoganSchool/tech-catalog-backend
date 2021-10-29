@@ -76,6 +76,7 @@ def login_endpoint(login: Login):
         )
 
         name = id_info["name"]
+        email = id_info["email"]
     except ValueError:
         raise HTTPException(400, "Invalid Google auth token.")
 
@@ -83,6 +84,7 @@ def login_endpoint(login: Login):
         {
             "iss": "Logan Tech Catalog",
             "sub": name,
+            "email": email,
             "iat": int(time.time()),
             "exp": int(time.time())
             + 60 * 60 * 24 * 365,  # expire in one year from issuing time
