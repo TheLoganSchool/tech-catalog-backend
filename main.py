@@ -154,7 +154,6 @@ def get_item_endpoint(item_key: str):
 @app.get("/get_item_image")
 def get_item_image_endpoint(item_key: str):
     data = items_drive.get(f"{item_key}.png")
-    return True
     return StreamingResponse(data.iter_chunks())
 
 
