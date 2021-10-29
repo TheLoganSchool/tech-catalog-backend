@@ -5,7 +5,7 @@ import traceback
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request, Form, UploadFile, File
-from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic.main import BaseModel
 from deta import Deta
@@ -156,7 +156,7 @@ def get_item_endpoint(item_key: str):
 @app.get("/get_item_image")
 def get_item_image_endpoint(item_key: str):
     data = items_drive.get(f"{item_key}.png")
-    return StreamingResponse(data.iter_chunks())
+    return data.read()
 
 
 @app.get("/error")
