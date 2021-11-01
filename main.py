@@ -28,6 +28,8 @@ deta = Deta(os.environ["DETA_PROJECT_KEY"])
 items_db = deta.Base("items")
 items_drive = deta.Drive("items")
 
+used_sessions_db = deta.Base("used_sessions")
+
 origins = [
     "*",
 ]
@@ -87,7 +89,7 @@ def login_endpoint(login: Login):
             "email": email,
             "iat": int(time.time()),
             "exp": int(time.time())
-            + 60 * 60 * 24 * 365,  # expire in one year from issuing time
+            + 60 * 60 * 24 * 7,  # expire in one week from issuing time
         },
         os.environ["JWT_SECRET"],
         algorithm="HS256",
@@ -117,15 +119,13 @@ def add_item_endpoint(
     request: Request,
     name: str = Form(...),
     description: str = Form(...),
+    quantity: str = Form(...),
     image: UploadFile = File(...),
     location: Optional[str] = Form(None),
 ):
     check_add_item_auth_endpoint(request)
 
-    item_dict = {
-        "name": name,
-        "description": description,
-    }
+    item_dict = {"name": name, "description": description, "quantity": quantity}
     if location:
         item_dict["location"] = location
 
@@ -162,3 +162,33 @@ def get_item_image_endpoint(item_key: str):
 @app.get("/error")
 def error_endpoint():
     raise Exception
+
+
+@app.get("/easter_egg_trigger")
+def easter_egg_trigger_endpoint(encoded_session: str):
+    decoded = jwt.decode(
+        encoded_session, os.environ["JWT_SECRET"], algorithms=["HS256"]
+    )
+    for used_session in used_sessions_db.fetch().items:
+        if used_session["value"] == encoded_session:
+            raise HTTPException(
+                400, "Easter egg has been triggered on session previously."
+            )
+
+    used_sessions_db.put(encoded_session)
+
+    try:
+        email = decoded["email"]
+        name = decoded["sub"]
+    except KeyError:
+        raise HTTPException(400, "Session doesn't include email or sub.")
+    webhook.send(
+        f"<@375419186798657536> <@375419186798657536>\
+        {name} <{email}> has triggered the easter egg"
+    )
+    return True
+
+
+@app.post("/easter_egg_final")
+def easter_egg_final_endpoint():
+    pass
