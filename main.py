@@ -9,12 +9,11 @@ from deta import Deta
 from discord import RequestsWebhookAdapter, Webhook
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import (HTMLResponse, PlainTextResponse,
-                               StreamingResponse)
+from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from mangum import Mangum
-from PIL import Image
+from PIL.Image import core
 from pydantic.main import BaseModel
 
 GOOGLE_CLIENT_ID = (
@@ -130,7 +129,7 @@ def add_item_endpoint(
     if location:
         item_dict["location"] = location
 
-    image = Image.open(image.file)
+    image = core.open(image.file)
 
     image_byte_array = io.BytesIO()
     image.save(image_byte_array, format="png")
