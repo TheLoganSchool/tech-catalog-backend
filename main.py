@@ -1,20 +1,21 @@
-import os
 import io
+import os
 import time
 import traceback
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Request, Form, UploadFile, File
-from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic.main import BaseModel
-from deta import Deta
-from discord import Webhook, RequestsWebhookAdapter
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
 import jwt
+from deta import Deta
+from discord import RequestsWebhookAdapter, Webhook
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import (HTMLResponse, PlainTextResponse,
+                               StreamingResponse)
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token
+from mangum import Mangum
 from PIL import Image
-
+from pydantic.main import BaseModel
 
 GOOGLE_CLIENT_ID = (
     "909450569518-a13qpdatseo5vodup53g2ll8ifa4pej9.apps.googleusercontent.com"
@@ -192,3 +193,6 @@ def easter_egg_trigger_endpoint(encoded_session: str):
 @app.post("/easter_egg_final")
 def easter_egg_final_endpoint():
     pass
+
+
+handler = Mangum(app)
