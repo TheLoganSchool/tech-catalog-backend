@@ -1,5 +1,6 @@
 aiohttp==3.7.4.post0
 anyio==3.3.4
+asgiref==3.4.1
 async-timeout==3.0.1
 attrs==21.2.0
 backports.entry-points-selectable==1.1.0
@@ -8,12 +9,14 @@ certifi==2021.10.8
 cfgv==3.3.1
 chardet==4.0.0
 charset-normalizer==2.0.7
+click==8.0.3
 deta==1.0.0
 discord.py==1.7.3
 distlib==0.3.3
 fastapi==0.70.0
 filelock==3.3.2
 google-auth==2.3.3
+h11==0.12.0
 identify==2.3.3
 idna==3.3
 mangum==0.12.3
@@ -26,6 +29,7 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pydantic==1.8.2
 PyJWT==2.3.0
+python-multipart==0.0.5
 PyYAML==6.0
 requests==2.26.0
 rsa==4.7.2
@@ -35,5 +39,6 @@ starlette==0.16.0
 toml==0.10.2
 typing-extensions==3.10.0.2
 urllib3==1.26.7
+uvicorn==0.15.0
 virtualenv==20.10.0
 yarl==1.7.2
