@@ -7,7 +7,15 @@ from typing import Optional
 import jwt
 from deta import Deta
 from discord import RequestsWebhookAdapter, Webhook
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import (
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+    BackgroundTasks,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse
 from google.auth.transport import requests as google_requests
@@ -59,6 +67,10 @@ def custom_http_exception_handler(request, exc):
         + "```"
     )
     return PlainTextResponse("Internal Server Error :)", 500)
+
+
+def write_image(name: str, data: bytes):
+    items_drive.put(name, data)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -117,6 +129,7 @@ def check_add_item_auth_endpoint(request: Request):
 @app.post("/add_item")
 def add_item_endpoint(
     request: Request,
+    background_tasks: BackgroundTasks,
     name: str = Form(...),
     description: str = Form(...),
     quantity: str = Form(...),
@@ -135,7 +148,7 @@ def add_item_endpoint(
     image.save(image_byte_array, format="png")
 
     key = items_db.put(item_dict)["key"]
-    items_drive.put(key + ".png", image_byte_array.getvalue())
+    background_tasks.add_task(write_image, key + ".png", image_byte_array.getvalue())
 
     return key
 
