@@ -13,7 +13,7 @@ from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from mangum import Mangum
-from PIL.Image import core
+from PIL import Image
 from pydantic.main import BaseModel
 
 GOOGLE_CLIENT_ID = (
@@ -129,7 +129,7 @@ def add_item_endpoint(
     if location:
         item_dict["location"] = location
 
-    image = core.open(image.file)
+    image = Image.open(image.file)
 
     image_byte_array = io.BytesIO()
     image.save(image_byte_array, format="png")
