@@ -3,6 +3,8 @@ import os
 import time
 import traceback
 from typing import Optional
+import smtplib
+import ssl
 
 import jwt
 from deta import Deta
@@ -36,6 +38,8 @@ items_db = deta.Base("items")
 items_drive = deta.Drive("items")
 
 used_sessions_db = deta.Base("used_sessions")
+
+ssl_context = ssl.create_default_context()
 
 origins = [
     "*",
@@ -198,9 +202,24 @@ def easter_egg_trigger_endpoint(encoded_session: str):
         "<@375419186798657536><@555709231697756160>"
         + f" {name} <{email}> has triggered the easter egg"
     )
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", context=ssl_context) as server:
+        server.login(os.environ["EMAIL"], os.environ["EMAIL_PASSWORD"])
+
+        message = (
+            f"""\
+        Subject: Tech Catalog Easter Egg Trigger
+
+        {name} <{email}> has triggered the easter egg. """
+            + "Please place a candy bag for them in the tech office door. "
+            + "When done please click the link below: "
+        )
+
+        server.sendmail(os.environ["EMAIL"], os.environ["EASTER_EGG_EMAIL"], message)
+
     return True
 
 
-@app.post("/easter_egg_final")
-def easter_egg_final_endpoint():
+@app.get("/easter_egg")
+def easter_egg_endpoint():
     pass
