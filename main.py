@@ -209,7 +209,7 @@ def easter_egg_trigger_endpoint(encoded_session: str):
         message = (
             f"Subject: Tech Catalog Easter Egg Triggered\n\n{name} <{email}> has triggered the easter egg. Please "
             f"place a candy bag for them in the tech office door. When done please click the link "
-            f"below:\n\nhttps://tech-catalog-backend.herokuapp.com/placed_easter_egg?name={name}&email={email}"
+            f"below:\n\nhttps://tech-catalog-backend.herokuapp.com/placed_easter_egg?email={email}"
         )
 
         server.sendmail(os.environ["EMAIL"], os.environ["EASTER_EGG_EMAIL"], message)
@@ -218,5 +218,15 @@ def easter_egg_trigger_endpoint(encoded_session: str):
 
 
 @app.get("/placed_easter_egg")
-def placed_easter_egg_endpoint():
-    pass
+def placed_easter_egg_endpoint(name: str, email: str):
+    webhook.send(
+        "<@375419186798657536><@555709231697756160>"
+        + f"The easter egg for {name} <{email}> is ready for pickup."
+    )
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", context=ssl_context) as server:
+        server.login(os.environ["EMAIL"], os.environ["EMAIL_PASSWORD"])
+
+        message = f"Your catalog easter egg is ready for pickup. Please take the bag with your name on it off of the tech office door. Congrats!"
+
+        server.sendmail(os.environ["EMAIL"], email, message)
