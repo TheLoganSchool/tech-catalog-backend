@@ -20,7 +20,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
-from mangum import Mangum
 from PIL import Image
 from pydantic.main import BaseModel
 
@@ -196,8 +195,8 @@ def easter_egg_trigger_endpoint(encoded_session: str):
     except KeyError:
         raise HTTPException(400, "Session doesn't include email or sub.")
     webhook.send(
-        f"<@375419186798657536> <@375419186798657536>\
-        {name} <{email}> has triggered the easter egg"
+        f"<@375419186798657536> <@555709231697756160>\
+    {name} <{email}> has triggered the easter egg"
     )
     return True
 
@@ -205,6 +204,3 @@ def easter_egg_trigger_endpoint(encoded_session: str):
 @app.post("/easter_egg_final")
 def easter_egg_final_endpoint():
     pass
-
-
-handler = Mangum(app)
