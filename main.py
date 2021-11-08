@@ -176,7 +176,7 @@ def error_endpoint():
     raise Exception
 
 
-@app.get("/easter_egg_trigger")
+@app.post("/easter_egg_trigger")
 def easter_egg_trigger_endpoint(encoded_session: str):
     decoded = jwt.decode(
         encoded_session, os.environ["JWT_SECRET"], algorithms=["HS256"]
