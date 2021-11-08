@@ -195,8 +195,8 @@ def easter_egg_trigger_endpoint(encoded_session: str):
     except KeyError:
         raise HTTPException(400, "Session doesn't include email or sub.")
     webhook.send(
-        f"<@375419186798657536> <@555709231697756160>\
-    {name} <{email}> has triggered the easter egg"
+        "<@375419186798657536><@555709231697756160>"
+        + f" {name} <{email}> has triggered the easter egg"
     )
     return True
 
