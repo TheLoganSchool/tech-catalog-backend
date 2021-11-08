@@ -195,7 +195,7 @@ def easter_egg_trigger_endpoint(encoded_session: str):
 
     try:
         email = decoded["email"]
-        name = decoded["sub"]
+        name = decoded["sub"][0]
     except KeyError:
         raise HTTPException(400, "Session doesn't include email or sub.")
     webhook.send(
@@ -209,7 +209,7 @@ def easter_egg_trigger_endpoint(encoded_session: str):
         message = (
             f"Subject: Tech Catalog Easter Egg Triggered\n\n{name} <{email}> has triggered the easter egg. Please "
             f"place a candy bag for them in the tech office door. When done please click the link "
-            f"below:\n\nhttps://google.com "
+            f"below:\n\nhttps://tech-catalog-backend.herokuapp.com/placed_easter_egg?name={name}&email={email}"
         )
 
         server.sendmail(os.environ["EMAIL"], os.environ["EASTER_EGG_EMAIL"], message)
@@ -217,6 +217,6 @@ def easter_egg_trigger_endpoint(encoded_session: str):
     return True
 
 
-@app.get("/easter_egg")
-def easter_egg_endpoint():
+@app.get("/placed_easter_egg")
+def placed_easter_egg_endpoint():
     pass
