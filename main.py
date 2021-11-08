@@ -207,12 +207,9 @@ def easter_egg_trigger_endpoint(encoded_session: str):
         server.login(os.environ["EMAIL"], os.environ["EMAIL_PASSWORD"])
 
         message = (
-            f"""\
-        Subject: Tech Catalog Easter Egg Trigger
-
-        {name} <{email}> has triggered the easter egg. """
-            + "Please place a candy bag for them in the tech office door. "
-            + "When done please click the link below: "
+            f"Tech Catalog Easter Egg Trigger\n{name} <{email}> has triggered the easter egg. Please place a "
+            f"candy bag for them in the tech office door. When done please click the link "
+            f"below:\nhttps://google.com "
         )
 
         server.sendmail(os.environ["EMAIL"], os.environ["EASTER_EGG_EMAIL"], message)
