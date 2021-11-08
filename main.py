@@ -195,7 +195,7 @@ def easter_egg_trigger_endpoint(encoded_session: str):
 
     try:
         email = decoded["email"]
-        name = decoded["sub"][0]
+        name = decoded["sub"].split()[0]
     except KeyError:
         raise HTTPException(400, "Session doesn't include email or sub.")
     webhook.send(
