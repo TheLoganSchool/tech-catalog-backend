@@ -19,7 +19,12 @@ from fastapi import (
     BackgroundTasks,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse, RedirectResponse
+from fastapi.responses import (
+    HTMLResponse,
+    PlainTextResponse,
+    StreamingResponse,
+    RedirectResponse,
+)
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from PIL import Image
@@ -28,6 +33,8 @@ from pydantic.main import BaseModel
 GOOGLE_CLIENT_ID = (
     "909450569518-a13qpdatseo5vodup53g2ll8ifa4pej9.apps.googleusercontent.com"
 )
+
+UPLOADED_IMAGE_SIZE = 720
 
 app = FastAPI()
 
@@ -146,6 +153,8 @@ def add_item_endpoint(
         item_dict["location"] = location
 
     image = Image.open(image.file)
+
+    image.thumbnail((UPLOADED_IMAGE_SIZE, UPLOADED_IMAGE_SIZE))
 
     image_byte_array = io.BytesIO()
     image.save(image_byte_array, format="png", optimize=True, quality=50)
