@@ -148,7 +148,7 @@ def add_item_endpoint(
     image = Image.open(image.file)
 
     image_byte_array = io.BytesIO()
-    image.save(image_byte_array, format="png")
+    image.save(image_byte_array, format="png", optimize=True, quality=50)
 
     key = items_db.put(item_dict)["key"]
     background_tasks.add_task(write_image, key + ".png", image_byte_array.getvalue())
