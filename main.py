@@ -19,7 +19,7 @@ from fastapi import (
     BackgroundTasks,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, StreamingResponse, RedirectResponse
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from PIL import Image
@@ -171,8 +171,11 @@ def get_item_endpoint(item_key: str):
 
 @app.get("/get_item_image")
 def get_item_image_endpoint(item_key: str):
-    data = items_drive.get(f"{item_key}.png")
-    return StreamingResponse(data.iter_chunks(), media_type="image/png")
+    if item_key:
+        data = items_drive.get(f"{item_key}.png")
+        return StreamingResponse(data.iter_chunks(), media_type="image/png")
+    else:
+        return RedirectResponse("https://via.placeholder.com/512")
 
 
 @app.get("/error")
