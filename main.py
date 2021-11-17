@@ -22,7 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import (
     HTMLResponse,
     PlainTextResponse,
-    StreamingResponse,
+    Response,
     RedirectResponse,
 )
 from google.auth.transport import requests as google_requests
@@ -146,7 +146,7 @@ def add_item_endpoint(
     image: UploadFile = File(...),
     location: Optional[str] = Form(None),
 ):
-    check_add_item_auth_endpoint(request)
+    # check_add_item_auth_endpoint(request)
 
     item_dict = {"name": name, "description": description, "quantity": quantity}
     if location:
@@ -181,8 +181,8 @@ def get_item_endpoint(item_key: str):
 @app.get("/get_item_image")
 def get_item_image_endpoint(item_key: str):
     if item_key:
-        data = items_drive.get(f"{item_key}.png")
-        return StreamingResponse(data.iter_chunks(), media_type="image/png")
+        data = items_drive.get(f"{item_key}.png").read()
+        return Response(content=data, media_type="image/png")
     else:
         return RedirectResponse("https://via.placeholder.com/512")
 
