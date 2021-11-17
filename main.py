@@ -181,8 +181,8 @@ def get_item_endpoint(item_key: str):
 @app.get("/get_item_image")
 def get_item_image_endpoint(item_key: str):
     if item_key:
-        data = items_drive.get(f"{item_key}.png")
-        return StreamingResponse(data.iter_chunks(), media_type="image/png")
+        with items_drive.get(f"{item_key}.png") as data:
+            return StreamingResponse(data.iter_chunks(), media_type="image/png")
     else:
         return RedirectResponse("https://via.placeholder.com/512")
 
