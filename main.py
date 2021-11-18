@@ -22,13 +22,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import (
     HTMLResponse,
     PlainTextResponse,
-    Response,
-    RedirectResponse,
 )
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from PIL import Image
 from pydantic.main import BaseModel
+import boto3
 
 GOOGLE_CLIENT_ID = (
     "909450569518-a13qpdatseo5vodup53g2ll8ifa4pej9.apps.googleusercontent.com"
@@ -42,7 +41,12 @@ webhook = Webhook.from_url(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAda
 
 deta = Deta(os.environ["DETA_PROJECT_KEY"])
 items_db = deta.Base("items")
-items_drive = deta.Drive("items")
+
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+)
 
 used_sessions_db = deta.Base("used_sessions")
 
@@ -79,8 +83,12 @@ def custom_http_exception_handler(request, exc):
     return PlainTextResponse("Internal Server Error :)", 500)
 
 
-def write_image(name: str, data: bytes):
-    items_drive.put(name, data)
+def write_image(name: str, file):
+    s3.upload_fileobj(
+        file,
+        "tech-catalog-images",
+        name,
+    )
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -176,15 +184,6 @@ def get_item_endpoint(item_key: str):
     if not result:
         raise HTTPException(400, "Item with key doesn't exist.")
     return result
-
-
-@app.get("/get_item_image")
-def get_item_image_endpoint(item_key: str):
-    if item_key:
-        data = items_drive.get(f"{item_key}.png").read()
-        return Response(content=data, media_type="image/png")
-    else:
-        return RedirectResponse("https://via.placeholder.com/512")
 
 
 @app.get("/error")
