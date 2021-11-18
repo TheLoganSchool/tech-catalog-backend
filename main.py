@@ -83,9 +83,9 @@ def custom_http_exception_handler(request, exc):
     return PlainTextResponse("Internal Server Error :)", 500)
 
 
-def write_image(name: str, file):
-    s3.upload_fileobj(
-        file,
+def write_image(name: str, data: bytes):
+    s3.put_object(
+        data,
         "tech-catalog-images",
         name,
     )
@@ -168,7 +168,7 @@ def add_item_endpoint(
     image.save(image_byte_array, format="png", optimize=True, quality=50)
 
     key = items_db.put(item_dict)["key"]
-    background_tasks.add_task(write_image, key + ".png", image_byte_array)
+    background_tasks.add_task(write_image, key + ".png", image_byte_array.getvalue())
 
     return key
 
