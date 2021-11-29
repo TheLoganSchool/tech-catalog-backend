@@ -154,9 +154,9 @@ def add_item_endpoint(
     key = items_db.put(item_dict)["key"]
 
     s3.put_object(
-        image_byte_array.getvalue(),
-        "tech-catalog-images",
-        key + ".png",
+        Body=image_byte_array.getvalue(),
+        Bucket="tech-catalog-images",
+        Key=key + ".png",
     )
 
     return key
