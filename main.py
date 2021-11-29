@@ -40,7 +40,8 @@ UPLOADED_IMAGE_SIZE = 720
 app = FastAPI()
 
 sentry_sdk.init(
-    dsn="https://bc4e7e5cd13b463cb6a4e3a9a7073e84@o1079805.ingest.sentry.io/6084956"
+    dsn="https://bc4e7e5cd13b463cb6a4e3a9a7073e84@o1079805.ingest.sentry.io/6084956",
+    traces_sample_rate=1.0,
 )
 app.add_middleware(SentryAsgiMiddleware)
 
