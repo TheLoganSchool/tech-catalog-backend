@@ -28,6 +28,8 @@ from google.oauth2 import id_token
 from PIL import Image
 from pydantic.main import BaseModel
 import boto3
+import sentry_sdk
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 GOOGLE_CLIENT_ID = (
     "909450569518-a13qpdatseo5vodup53g2ll8ifa4pej9.apps.googleusercontent.com"
@@ -36,6 +38,11 @@ GOOGLE_CLIENT_ID = (
 UPLOADED_IMAGE_SIZE = 720
 
 app = FastAPI()
+
+sentry_sdk.init(
+    dsn="https://bc4e7e5cd13b463cb6a4e3a9a7073e84@o1079805.ingest.sentry.io/6084956"
+)
+app.add_middleware(SentryAsgiMiddleware)
 
 webhook = Webhook.from_url(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAdapter())
 
