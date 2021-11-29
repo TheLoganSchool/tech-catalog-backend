@@ -75,14 +75,6 @@ class Login(BaseModel):
     g_csrf_token: str
 
 
-def write_image(name: str, data: bytes):
-    s3.put_object(
-        data,
-        "tech-catalog-images",
-        name,
-    )
-
-
 @app.get("/", response_class=HTMLResponse)
 def root():
     return "<center><h1>🐰🥚 🔴🐟</h1></center>"
@@ -160,7 +152,12 @@ def add_item_endpoint(
     image.save(image_byte_array, format="png", optimize=True, quality=50)
 
     key = items_db.put(item_dict)["key"]
-    background_tasks.add_task(write_image, key + ".png", image_byte_array.getvalue())
+
+    s3.put_object(
+        image_byte_array.getvalue(),
+        "tech-catalog-images",
+        key + ".png",
+    )
 
     return key
 
