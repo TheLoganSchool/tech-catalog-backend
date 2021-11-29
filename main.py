@@ -130,8 +130,6 @@ def check_add_item_auth_endpoint(request: Request):
 
 @app.post("/add_item")
 def add_item_endpoint(
-    request: Request,
-    background_tasks: BackgroundTasks,
     name: str = Form(...),
     description: str = Form(...),
     quantity: str = Form(...),
@@ -157,6 +155,7 @@ def add_item_endpoint(
         Body=image_byte_array.getvalue(),
         Bucket="tech-catalog-images",
         Key=key + ".png",
+        ACL="public-read",
     )
 
     return key
