@@ -1,7 +1,6 @@
 import io
 import os
 import time
-import traceback
 from typing import Optional
 import smtplib
 import ssl
@@ -21,7 +20,6 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import (
     HTMLResponse,
-    PlainTextResponse,
 )
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
@@ -75,20 +73,6 @@ app.add_middleware(
 
 class Login(BaseModel):
     g_csrf_token: str
-
-
-@app.exception_handler(Exception)
-def custom_http_exception_handler(request, exc):
-    webhook.send(
-        "```"
-        + "".join(
-            traceback.format_exception(
-                etype=type(exc), value=exc, tb=exc.__traceback__, limit=-8
-            )
-        )
-        + "```"
-    )
-    return PlainTextResponse("Internal Server Error :)", 500)
 
 
 def write_image(name: str, data: bytes):
