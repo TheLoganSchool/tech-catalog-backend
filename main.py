@@ -1,32 +1,30 @@
 import io
 import os
-import time
-from typing import Optional
 import smtplib
 import ssl
+import time
+from typing import Optional
 
+import boto3
 import jwt
+import sentry_sdk
 from deta import Deta
 from discord import RequestsWebhookAdapter, Webhook
 from fastapi import (
+    BackgroundTasks,
     FastAPI,
     File,
     Form,
     HTTPException,
     Request,
     UploadFile,
-    BackgroundTasks,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import (
-    HTMLResponse,
-)
+from fastapi.responses import HTMLResponse
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from PIL import Image
 from pydantic.main import BaseModel
-import boto3
-import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 GOOGLE_CLIENT_ID = (
