@@ -226,7 +226,7 @@ def placed_easter_egg_endpoint(name: str, email: str):
     with smtplib.SMTP_SSL("smtp.gmail.com", context=ssl_context) as server:
         server.login(os.environ["EMAIL"], os.environ["EMAIL_PASSWORD"])
 
-        message = f"Subject: Tech Catalog Easter Egg Ready\n\nYour catalog easter egg is ready for pickup. Please take the bag with your name on it off of the tech office door. Congrats!"
+        message = "Subject: Tech Catalog Easter Egg Ready\n\nYour catalog easter egg is ready for pickup. Please take the bag with your name on it off of the tech office door. Congrats!"
 
         server.sendmail(os.environ["EMAIL"], email, message)
 
