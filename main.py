@@ -1,14 +1,17 @@
 import io
 import os
-import time
-from typing import Optional
 import smtplib
 import ssl
+import time
+from typing import Optional
 
+import boto3
 import jwt
+import sentry_sdk
 from deta import Deta
 from discord import RequestsWebhookAdapter, Webhook
 from fastapi import (
+    BackgroundTasks,
     FastAPI,
     File,
     Form,
@@ -17,15 +20,11 @@ from fastapi import (
     UploadFile,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import (
-    HTMLResponse,
-)
+from fastapi.responses import HTMLResponse
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from PIL import Image
 from pydantic.main import BaseModel
-import boto3
-import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 GOOGLE_CLIENT_ID = (
@@ -225,7 +224,7 @@ def placed_easter_egg_endpoint(name: str, email: str):
     with smtplib.SMTP_SSL("smtp.gmail.com", context=ssl_context) as server:
         server.login(os.environ["EMAIL"], os.environ["EMAIL_PASSWORD"])
 
-        message = f"Subject: Tech Catalog Easter Egg Ready\n\nYour catalog easter egg is ready for pickup. Please take the bag with your name on it off of the tech office door. Congrats!"
+        message = "Subject: Tech Catalog Easter Egg Ready\n\nYour catalog easter egg is ready for pickup. Please take the bag with your name on it off of the tech office door. Congrats!"
 
         server.sendmail(os.environ["EMAIL"], email, message)
 
