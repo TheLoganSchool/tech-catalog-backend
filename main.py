@@ -177,7 +177,7 @@ def get_item_endpoint(item_key: str):
 @app.post("/record_event")
 def record_event_endpoint(request: Request):
     body = asyncio.run(request.body())
-    return events_db.put(body)
+    return events_db.put(body.decode("utf-8"))
 
 
 @app.get("/error")
