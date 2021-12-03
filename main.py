@@ -4,6 +4,7 @@ import smtplib
 import ssl
 import time
 from typing import Optional
+import asyncio
 
 import boto3
 import jwt
@@ -11,7 +12,6 @@ import sentry_sdk
 from deta import Deta
 from discord import RequestsWebhookAdapter, Webhook
 from fastapi import (
-    BackgroundTasks,
     FastAPI,
     File,
     Form,
@@ -44,7 +44,10 @@ app.add_middleware(SentryAsgiMiddleware)
 webhook = Webhook.from_url(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAdapter())
 
 deta = Deta(os.environ["DETA_PROJECT_KEY"])
+
 items_db = deta.Base("items")
+used_sessions_db = deta.Base("used_sessions")
+events_db = deta.Base("events")
 
 s3 = boto3.client(
     "s3",
@@ -52,7 +55,6 @@ s3 = boto3.client(
     aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
 )
 
-used_sessions_db = deta.Base("used_sessions")
 
 ssl_context = ssl.create_default_context()
 
@@ -170,6 +172,12 @@ def get_item_endpoint(item_key: str):
     if not result:
         raise HTTPException(400, "Item with key doesn't exist.")
     return result
+
+
+@app.post("/record_event")
+def record_event_endpoint(request: Request):
+    body = asyncio.run(request.body())
+    return events_db.put(body)
 
 
 @app.get("/error")
