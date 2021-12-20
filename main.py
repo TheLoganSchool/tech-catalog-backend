@@ -161,6 +161,13 @@ def add_item_endpoint(
     return key
 
 
+@app.post("/update_item")
+def update_item(key: str, updated_item: dict):
+    items_db.update(updated_item, key)
+
+    return True
+
+
 @app.get("/get_items")
 def get_items_endpoint():
     return items_db.fetch(limit=10000).items
