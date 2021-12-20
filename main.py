@@ -1,24 +1,17 @@
+import asyncio
 import io
 import os
 import smtplib
 import ssl
 import time
 from typing import Optional
-import asyncio
 
 import boto3
 import jwt
 import sentry_sdk
 from deta import Deta
 from discord import RequestsWebhookAdapter, Webhook
-from fastapi import (
-    FastAPI,
-    File,
-    Form,
-    HTTPException,
-    Request,
-    UploadFile,
-)
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from google.auth.transport import requests as google_requests
