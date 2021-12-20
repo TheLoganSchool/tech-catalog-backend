@@ -178,6 +178,13 @@ def update_item(item: Item):
     return True
 
 
+@app.post("/delete_item")
+def delete_item(key: str):
+    items_db.delete(key)
+
+    return True
+
+
 @app.get("/get_items")
 def get_items_endpoint():
     return items_db.fetch(limit=10000).items
