@@ -161,10 +161,18 @@ def add_item_endpoint(
     return key
 
 
+class Item(BaseModel):
+    key: str
+    name: str
+    description: str
+    quantity: str
+
+
 @app.post("/update_item")
-def update_item(key: str, name: str, description: str, quantity: str):
+def update_item(item: Item):
     items_db.update(
-        {"name": name, "description": description, "quantity": quantity}, key
+        {"name": item.name, "description": item.description, "quantity": item.quantity},
+        item.key,
     )
 
     return True
