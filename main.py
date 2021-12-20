@@ -162,8 +162,10 @@ def add_item_endpoint(
 
 
 @app.post("/update_item")
-def update_item(key: str, updated_item: dict):
-    items_db.update(updated_item, key)
+def update_item(key: str, name: str, description: str, quantity: str):
+    items_db.update(
+        {"name": name, "description": description, "quantity": quantity}, key
+    )
 
     return True
 
