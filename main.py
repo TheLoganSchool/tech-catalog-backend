@@ -133,12 +133,18 @@ def add_item_endpoint(
     name: str = Form(...),
     description: str = Form(...),
     quantity: str = Form(...),
+    categories: str = Form(...),
     image: UploadFile = File(...),
     location: Optional[str] = Form(None),
 ):
     # check_add_item_auth_endpoint(request)
 
-    item_dict = {"name": name, "description": description, "quantity": quantity}
+    item_dict = {
+        "name": name,
+        "description": description,
+        "quantity": quantity,
+        "categories": categories,
+    }
     if location:
         item_dict["location"] = location
 
@@ -166,12 +172,18 @@ class Item(BaseModel):
     name: str
     description: str
     quantity: str
+    categories: str
 
 
 @app.post("/update_item")
 def update_item(item: Item):
     items_db.update(
-        {"name": item.name, "description": item.description, "quantity": item.quantity},
+        {
+            "name": item.name,
+            "description": item.description,
+            "quantity": item.quantity,
+            "categories": item.categories,
+        },
         item.key,
     )
 
@@ -206,7 +218,7 @@ def record_event_endpoint(request: Request):
 
 @app.get("/error")
 def error_endpoint():
-    raise Exception
+    raise Exception()
 
 
 @app.post("/easter_egg_trigger")
