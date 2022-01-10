@@ -19,7 +19,6 @@ from fastapi import (
     Request,
     UploadFile,
 )
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
@@ -57,18 +56,6 @@ s3 = boto3.client(
 
 
 ssl_context = ssl.create_default_context()
-
-origins = [
-    "*",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 class Login(BaseModel):
