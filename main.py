@@ -133,7 +133,7 @@ def add_item_endpoint(
     name: str = Form(...),
     description: str = Form(...),
     quantity: str = Form(...),
-    categories: str = Form(...),
+    categories: str = Form("all, "),
     image: UploadFile = File(...),
     location: Optional[str] = Form(None),
 ):
