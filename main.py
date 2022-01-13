@@ -135,6 +135,7 @@ def add_item_endpoint(
     quantity: str = Form(...),
     categories: str = Form("all"),
     image: UploadFile = File(...),
+    rotation: int = 0,
     location: Optional[str] = Form(None),
 ):
     # check_add_item_auth_endpoint(request)
@@ -144,6 +145,7 @@ def add_item_endpoint(
         "description": description,
         "quantity": quantity,
         "categories": categories,
+        "rotation": rotation,
     }
     if location:
         item_dict["location"] = location
@@ -172,6 +174,7 @@ class Item(BaseModel):
     name: str
     description: str
     quantity: str
+    rotation: int = 0
     categories: str
 
 
@@ -183,6 +186,7 @@ def update_item(item: Item):
             "description": item.description,
             "quantity": item.quantity,
             "categories": item.categories,
+            "rotation": item.rotation,
         },
         item.key,
     )
