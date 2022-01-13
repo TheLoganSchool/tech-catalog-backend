@@ -199,7 +199,7 @@ def delete_item(key: str):
 
 @app.get("/get_items")
 def get_items_endpoint():
-    return items_db.fetch(limit=10000).items
+    return sorted(items_db.fetch(limit=10000).items, key=lambda a: a["name"])
 
 
 @app.get("/get_item")
