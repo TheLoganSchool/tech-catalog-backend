@@ -195,7 +195,7 @@ class Item(BaseModel):
 
 @app.post("/update_item")
 def update_item(item: Item):
-    items_col.update_one(
+    items_col.replace_one(
         {"_id": item.key},
         {
             "name": item.name,
