@@ -195,7 +195,8 @@ class Item(BaseModel):
 
 @app.post("/update_item")
 def update_item(item: Item):
-    items_col.replace_one(
+
+    return items_col.replace_one(
         {"_id": item.key},
         {
             "name": item.name,
@@ -206,8 +207,6 @@ def update_item(item: Item):
             "checkoutable": item.checkoutable,
         },
     )
-
-    return True
 
 
 @app.post("/delete_item")
