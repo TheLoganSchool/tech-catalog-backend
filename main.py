@@ -5,7 +5,6 @@ import ssl
 from pymongo import MongoClient
 import time
 from typing import Optional
-import asyncio
 
 import boto3
 import jwt
@@ -183,6 +182,27 @@ def add_item_endpoint(
     return key
 
 
+@app.post("/rotate_image")
+def rotate_image_endpoint(key: str):
+    image_byte_array = io.BytesIO()
+
+    s3.download_fileobj("tech-catalog-images", key + ".png", image_byte_array)
+    image = Image.open(image_byte_array)
+    image.rotate(90)
+
+    image_byte_array = io.BytesIO()
+    image.save(image_byte_array, format="png")
+
+    s3.put_object(
+        Body=image_byte_array.getvalue(),
+        Bucket="tech-catalog-images",
+        Key=key + ".png",
+        ACL="public-read",
+    )
+
+    return key
+
+
 class Item(BaseModel):
     key: str
     name: str
@@ -206,10 +226,7 @@ def update_item(item: Item):
         },
     )
 
-    modified_count = items_col.replace_one(
-        {"_id": item.key},
-        replacement_dict,
-    ).modified_count
+    modified_count = items_col.replace_one({"_id": item.key}, replacement_dict)
 
     return str(replacement_dict)
 
