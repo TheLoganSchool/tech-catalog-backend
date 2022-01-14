@@ -219,7 +219,10 @@ def delete_item(key: str):
 
 @app.get("/get_items")
 def get_items_endpoint():
-    return sorted([item for item in items_col.find({})], key=lambda a: a["name"])
+    items = list(items_col.find({}))
+    for index, item in enumerate(items):
+        items[index]["_id"] = str(item["_id"])
+    return sorted(list(items_col.find({})), key=lambda a: a["name"])
 
 
 @app.get("/get_item")
