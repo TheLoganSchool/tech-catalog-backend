@@ -196,7 +196,7 @@ class Item(BaseModel):
 @app.post("/update_item")
 def update_item(item: Item):
     items_col.update_one(
-        item.key,
+        {"_id": item.key},
         {
             "name": item.name,
             "description": item.description,
