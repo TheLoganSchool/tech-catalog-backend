@@ -195,7 +195,7 @@ class Item(BaseModel):
 
 @app.post("/update_item")
 def update_item(item: Item):
-    modified_count = items_col.replace_one(
+    replacement_dict = {
         {"_id": item.key},
         {
             "name": item.name,
@@ -205,9 +205,12 @@ def update_item(item: Item):
             "rotation": item.rotation,
             "checkoutable": item.checkoutable,
         },
+    }
+    modified_count = items_col.replace_one(
+        replacement_dict,
     ).modified_count
 
-    return modified_count
+    return replacement_dict
 
 
 @app.post("/delete_item")
