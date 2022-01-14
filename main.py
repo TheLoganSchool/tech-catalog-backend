@@ -223,8 +223,9 @@ def get_items_endpoint():
     for index, item in enumerate(items):
         items[index]["key"] = str(item["_id"])
         items[index].pop("_id")
+
+    items = sorted(items, key=lambda a: a["name"])
     return items
-    return sorted(list(items_col.find({})), key=lambda a: a["name"])
 
 
 @app.get("/get_item")
