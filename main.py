@@ -55,7 +55,7 @@ events_db = deta.Base("events")
 mongo_client = MongoClient(
     f"mongodb+srv://{os.environ['MONGO_USER']}:{os.environ['MONGO_PASSWORD']}@cluster0.8mtwa.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 )
-mongo_db = mongo_client.catalog - backend
+mongo_db = mongo_client.catalog
 
 items_col = mongo_db.items
 used_sessions_col = mongo_db.used_sessions
