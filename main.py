@@ -196,16 +196,18 @@ class Item(BaseModel):
 @app.post("/update_item")
 def update_item(item: Item):
 
-    return items_col.replace_one(
-        {"_id": item.key},
-        {
-            "name": item.name,
-            "description": item.description,
-            "quantity": item.quantity,
-            "categories": item.categories,
-            "rotation": item.rotation,
-            "checkoutable": item.checkoutable,
-        },
+    return str(
+        items_col.replace_one(
+            {"_id": item.key},
+            {
+                "name": item.name,
+                "description": item.description,
+                "quantity": item.quantity,
+                "categories": item.categories,
+                "rotation": item.rotation,
+                "checkoutable": item.checkoutable,
+            },
+        )
     )
 
 
