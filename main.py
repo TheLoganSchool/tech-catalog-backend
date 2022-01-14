@@ -2,6 +2,7 @@ import io
 import os
 import smtplib
 import ssl
+from tabnanny import check
 import time
 from typing import Optional
 import asyncio
@@ -136,6 +137,7 @@ def add_item_endpoint(
     categories: str = Form("all"),
     image: UploadFile = File(...),
     rotation: int = 0,
+    checkoutable: bool = True,
     location: Optional[str] = Form(None),
 ):
     # check_add_item_auth_endpoint(request)
@@ -146,6 +148,7 @@ def add_item_endpoint(
         "quantity": quantity,
         "categories": categories,
         "rotation": rotation,
+        "checkoutable": checkoutable,
     }
     if location:
         item_dict["location"] = location
@@ -176,6 +179,7 @@ class Item(BaseModel):
     quantity: str
     rotation: int = 0
     categories: str
+    checkoutable: bool = True
 
 
 @app.post("/update_item")
@@ -187,6 +191,7 @@ def update_item(item: Item):
             "quantity": item.quantity,
             "categories": item.categories,
             "rotation": item.rotation,
+            "checkoutable": item.checkoutable,
         },
         item.key,
     )
