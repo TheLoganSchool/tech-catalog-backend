@@ -2,7 +2,7 @@ import io
 import os
 import smtplib
 import ssl
-from tabnanny import check
+from pymongo import MongoClient
 import time
 from typing import Optional
 import asyncio
@@ -44,11 +44,22 @@ app.add_middleware(SentryAsgiMiddleware)
 
 webhook = Webhook.from_url(os.environ["WEBHOOK_URL"], adapter=RequestsWebhookAdapter())
 
+"""
 deta = Deta(os.environ["DETA_PROJECT_KEY"])
 
 items_db = deta.Base("items")
 used_sessions_db = deta.Base("used_sessions")
 events_db = deta.Base("events")
+"""
+
+mongo_client = MongoClient(
+    f"mongodb+srv://{os.environ['MONGO_USER']}:{os.environ['MONGO_PASSWORD']}@cluster0.8mtwa.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+)
+mongo_db = mongo_client.catalog - backend
+
+items_col = mongo_db.items
+used_sessions_col = mongo_db.used_sessions
+events_col = mongo_db.events
 
 s3 = boto3.client(
     "s3",
@@ -160,7 +171,7 @@ def add_item_endpoint(
     image_byte_array = io.BytesIO()
     image.save(image_byte_array, format="png", optimize=True, quality=50)
 
-    key = items_db.put(item_dict)["key"]
+    key = items_col.insert_one(item_dict)["_id"]
 
     s3.put_object(
         Body=image_byte_array.getvalue(),
@@ -184,7 +195,8 @@ class Item(BaseModel):
 
 @app.post("/update_item")
 def update_item(item: Item):
-    items_db.update(
+    items_col.update_one(
+        item.key,
         {
             "name": item.name,
             "description": item.description,
@@ -193,7 +205,6 @@ def update_item(item: Item):
             "rotation": item.rotation,
             "checkoutable": item.checkoutable,
         },
-        item.key,
     )
 
     return True
@@ -201,28 +212,22 @@ def update_item(item: Item):
 
 @app.post("/delete_item")
 def delete_item(key: str):
-    items_db.delete(key)
+    items_col.delete_one(key)
 
     return True
 
 
 @app.get("/get_items")
 def get_items_endpoint():
-    return sorted(items_db.fetch(limit=10000).items, key=lambda a: a["name"])
+    return sorted(list(items_col.find({})), key=lambda a: a["name"])
 
 
 @app.get("/get_item")
 def get_item_endpoint(item_key: str):
-    result = items_db.get(item_key)
+    result = items_col.find_one(item_key)
     if not result:
         raise HTTPException(400, "Item with key doesn't exist.")
     return result
-
-
-@app.post("/record_event")
-def record_event_endpoint(request: Request):
-    body = asyncio.run(request.body())
-    return events_db.put(body.decode("utf-8"))
 
 
 @app.get("/error")
@@ -230,18 +235,19 @@ def error_endpoint():
     raise Exception()
 
 
+# Not mongo ported
 @app.post("/easter_egg_trigger")
 def easter_egg_trigger_endpoint(encoded_session: str):
     decoded = jwt.decode(
         encoded_session, os.environ["JWT_SECRET"], algorithms=["HS256"]
     )
-    for used_session in used_sessions_db.fetch().items:
+    for used_session in used_sessions_col.fetch().items:
         if used_session["value"] == encoded_session:
             raise HTTPException(
                 400, "Easter egg has been triggered on session previously."
             )
 
-    used_sessions_db.put(encoded_session)
+    used_sessions_col.insert_one(encoded_session)
 
     try:
         email = decoded["email"]
