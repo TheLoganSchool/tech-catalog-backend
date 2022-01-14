@@ -210,7 +210,7 @@ def update_item(item: Item):
         replacement_dict,
     ).modified_count
 
-    return replacement_dict
+    return str(replacement_dict)
 
 
 @app.post("/delete_item")
