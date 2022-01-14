@@ -221,7 +221,7 @@ def delete_item(key: str):
 def get_items_endpoint():
     items = list(items_col.find({}))
     for index, item in enumerate(items):
-        items[index]["id"] = item["_id"]
+        items[index]["id"] = str(item["_id"])
         items[index].pop("_id")
     return items
     return sorted(list(items_col.find({})), key=lambda a: a["name"])
