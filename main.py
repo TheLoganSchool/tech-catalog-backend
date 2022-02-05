@@ -9,7 +9,6 @@ from typing import Optional
 import boto3
 import jwt
 import sentry_sdk
-from deta import Deta
 from discord import RequestsWebhookAdapter, Webhook
 from fastapi import (
     FastAPI,
@@ -73,6 +72,8 @@ origins = [
     "*",
 ]
 
+# FIXME: Create proper CORS support
+# Remove need for CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -86,11 +87,13 @@ class Login(BaseModel):
     g_csrf_token: str
 
 
+# Return easter egg hint as HTML
 @app.get("/", response_class=HTMLResponse)
 def root():
     return "<center><h1>🐰🥚 🔴🐟</h1></center>"
 
 
+# Returns session correspoding to "Login with Google"
 @app.post("/login")
 def login_endpoint(login: Login):
     token = login.g_csrf_token
@@ -123,6 +126,7 @@ def login_endpoint(login: Login):
     return encoded_session
 
 
+# Check if the user is authorized to add an item
 @app.post("/check_add_item_auth")
 def check_add_item_auth_endpoint(request: Request):
     auth_header = request.headers.get("Authorization")
@@ -139,6 +143,7 @@ def check_add_item_auth_endpoint(request: Request):
     return True
 
 
+# Add an item if user is authorized
 @app.post("/add_item")
 def add_item_endpoint(
     name: str = Form(...),
@@ -182,6 +187,7 @@ def add_item_endpoint(
     return key
 
 
+# Rotate an image stored in S3
 @app.post("/rotate_image")
 def rotate_image_endpoint(key: str):
     image_byte_array = io.BytesIO()
@@ -213,6 +219,7 @@ class Item(BaseModel):
     checkoutable: bool = True
 
 
+# Update an existing item
 @app.post("/update_item")
 def update_item(item: Item):
     replacement_dict = (
@@ -231,6 +238,7 @@ def update_item(item: Item):
     return str(replacement_dict)
 
 
+# Delete an item
 @app.post("/delete_item")
 def delete_item(key: str):
     items_col.delete_one(key)
@@ -257,12 +265,13 @@ def get_item_endpoint(item_key: str):
     return result
 
 
+# Raise an exception (for testing)
+# TODO: Remove
 @app.get("/error")
 def error_endpoint():
-    raise Exception()
+    raise Exception
 
 
-# Not mongo ported
 @app.post("/easter_egg_trigger")
 def easter_egg_trigger_endpoint(encoded_session: str):
     decoded = jwt.decode(
