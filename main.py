@@ -265,13 +265,6 @@ def get_item_endpoint(item_key: str):
     return result
 
 
-# Raise an exception (for testing)
-# TODO: Remove
-@app.get("/error")
-def error_endpoint():
-    raise Exception
-
-
 @app.post("/easter_egg_trigger")
 def easter_egg_trigger_endpoint(encoded_session: str):
     decoded = jwt.decode(
