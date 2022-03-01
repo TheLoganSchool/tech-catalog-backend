@@ -243,7 +243,7 @@ def update_item(item: Item):
 # Delete an item
 @app.post("/delete_item")
 def delete_item(key: str):
-    items_col.delete_one(key)
+    items_col.delete_one({"_id": key})
 
     return True
 
