@@ -2,6 +2,7 @@ import io
 import os
 import smtplib
 import ssl
+import uuid
 from pymongo import MongoClient
 import time
 from typing import Optional
@@ -158,6 +159,7 @@ def add_item_endpoint(
     # check_add_item_auth_endpoint(request)
 
     item_dict = {
+        "_id": str(uuid.uuid4()),
         "name": name,
         "description": description,
         "quantity": quantity,
