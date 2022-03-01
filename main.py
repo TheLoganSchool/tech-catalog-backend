@@ -177,7 +177,7 @@ def add_item_endpoint(
     image_byte_array = io.BytesIO()
     image.save(image_byte_array, format="png", optimize=True, quality=50)
 
-    key = items_col.insert_one(item_dict)["_id"]
+    key = items_col.insert_one(item_dict).inserted_id
 
     s3.put_object(
         Body=image_byte_array.getvalue(),
