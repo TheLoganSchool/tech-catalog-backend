@@ -145,6 +145,7 @@ def check_add_item_auth_endpoint(request: Request):
 
 
 # Add an item if user is authorized
+"""
 @app.post("/add_item")
 def add_item_endpoint(
     name: str = Form(...),
@@ -187,7 +188,7 @@ def add_item_endpoint(
     )
 
     return key
-
+"""
 
 # Rotate an image stored in S3
 @app.post("/rotate_image")
